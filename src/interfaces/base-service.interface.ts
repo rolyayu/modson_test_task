@@ -8,7 +8,7 @@ export interface IBaseService<T extends ObjectLiteral> {
     findOneByCriteria(criteria: QueryCriteria<T>): Promise<T | null>;
     findAllByCriteria(criteria: QueryCriteria<T>): Promise<T[] | null>;
 
-    save(value: Partial<T>): Promise<T>;
+    save(value: T): Promise<T>;
 
     delete(value: T): Promise<number>;
     deleteByCriteria(criteria: QueryCriteria<T>): Promise<number>;
