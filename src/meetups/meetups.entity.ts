@@ -1,10 +1,11 @@
-import { Entity, Column, PrimaryColumn, ManyToMany, JoinTable, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, ManyToMany, JoinTable, PrimaryGeneratedColumn } from "typeorm";
 import MeetUpTag from "./meetups-tag.entity";
 
 @Entity({ name: 'meetups' })
 export default class MeetUp {
     @Column({
         type: "number",
+        name: 'meetup_id'
     })
     @PrimaryGeneratedColumn()
     id: number;
@@ -22,9 +23,20 @@ export default class MeetUp {
     })
     description: string;
 
+    @Column({
+        type: 'timestamp',
+        nullable: false
+    })
+    eventTime: Date;
+
     @ManyToMany(() => MeetUpTag, {
+        eager: true,
         cascade: true
     })
-    @JoinTable()
+    @JoinTable({
+        name: 'meetups_tags',
+        joinColumn: { name: 'meetup_id', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' }
+    })
     tags: MeetUpTag[]
 }

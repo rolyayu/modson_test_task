@@ -1,9 +1,10 @@
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('meetups_tags')
+@Entity('tags')
 export default class MeetUpTag {
     @Column({
         type: "number",
+        name: 'tag_id'
     })
     @PrimaryGeneratedColumn()
     id: number;
