@@ -10,6 +10,5 @@ export interface IBaseService<T extends ObjectLiteral> {
 
     save(value: T): Promise<T>;
 
-    delete(value: T): Promise<number>;
-    deleteByCriteria(criteria: QueryCriteria<T>): Promise<number>;
+    deleteById(id: number): Promise<void | never>;
 }
