@@ -4,13 +4,14 @@ import MeetUp from "./meetups.entity";
 import { TypeOrmConnection } from "../database";
 import MeetUpService from "./meetups.service";
 import MeetUpTag from "./meetups-tag.entity";
+import { IMeetUpService } from "./meetups.service.interface";
 
-export class MeetUpFactory implements IBaseFactory<MeetUp> {
+export class MeetUpFactory implements IBaseFactory<MeetUp, IMeetUpService> {
     createRepository = (): Repository<MeetUp> => {
         const meetUpRepo: Repository<MeetUp> = TypeOrmConnection.getConnection().getRepository(MeetUp);
         return meetUpRepo;
     }
-    buildService = (): IBaseService<MeetUp> => {
+    buildService = (): IMeetUpService => {
         const tagsRepo = TypeOrmConnection.getConnection().getRepository(MeetUpTag)
         return new MeetUpService(this.createRepository(), tagsRepo);
     }
