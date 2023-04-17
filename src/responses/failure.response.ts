@@ -1,7 +1,6 @@
 
 
-export class FailureResponse {
+export interface FailureResponse {
     errorCode: number;
     message: string;
-    timestamp: Date = new Date();
 }

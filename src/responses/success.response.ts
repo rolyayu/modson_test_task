@@ -1,6 +1,6 @@
 
 
-export class SuccessResponse {
+export interface SuccessResponse {
     successCode: number;
     data: any;
 }
