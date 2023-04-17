@@ -1,28 +1,20 @@
 import MeetUp from './meetups.entity';
 import { Repository, TypeORMError } from 'typeorm';
-import { IBaseService, QueryCriteria } from '../interfaces/base-service.interface';
+import { IBaseService } from '../interfaces/base-service.interface';
 import MeetUpTag from './meetups-tag.entity';
 
 class MeetUpService implements IBaseService<MeetUp>{
     constructor(private meetUpRepository: Repository<MeetUp>, private tagRepository: Repository<MeetUpTag>) { }
 
-    findOneByCriteria = async (criteria: QueryCriteria<MeetUp>): Promise<MeetUp | null> => {
-        return await this.meetUpRepository.findOneBy(criteria);
-    }
-
-    findAllByCriteria = async (criteria: QueryCriteria<MeetUp>): Promise<MeetUp[]> => {
-        return await this.meetUpRepository.findBy(criteria);
-    }
-
-    save = async (value: MeetUp): Promise<MeetUp> => {
+    save = async (meetup: MeetUp): Promise<MeetUp> => {
         if (await this.meetUpRepository.exist({
             where: {
-                title: value.title
+                title: meetup.title
             }
         })) {
-            return await this.meetUpRepository.findOneBy({ title: value.title }) as MeetUp;
+            throw new TypeORMError(`Meet up with ${meetup.title} title alreadyExists.`)
         }
-        value.tags = await Promise.all(value.tags.map(async tag => {
+        meetup.tags = await Promise.all(meetup.tags.map(async tag => {
             if (await this.tagRepository.exist({
                 where: {
                     name: tag.name
@@ -35,7 +27,7 @@ class MeetUpService implements IBaseService<MeetUp>{
             }
         }))
 
-        return await this.meetUpRepository.save(value);
+        return await this.meetUpRepository.save(meetup);
     }
 
     deleteById = async (id: number): Promise<void | never> => {
@@ -50,18 +42,6 @@ class MeetUpService implements IBaseService<MeetUp>{
         meetUp!.tags = [];
         const meetUpWithoutTags = await this.meetUpRepository.save(meetUp!);
         await this.meetUpRepository.remove([meetUpWithoutTags]);
-    }
-
-    deleteByCriteria = async (criteria: QueryCriteria<MeetUp>): Promise<number> => {
-        const meetupsToDelete = await this.meetUpRepository.findBy(criteria);
-        const meetupsWithoutTags = meetupsToDelete.map(meetup => {
-            meetup.tags = [];
-            return meetup;
-        })
-        const savedMeetups = await this.meetUpRepository.save(meetupsWithoutTags);
-        const rowsToDelete = savedMeetups.length;
-        await this.meetUpRepository.remove(savedMeetups);
-        return rowsToDelete;
     }
 
     findById = async (id: number): Promise<MeetUp | null> => {
