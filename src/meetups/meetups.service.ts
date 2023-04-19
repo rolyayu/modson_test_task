@@ -6,14 +6,16 @@ import MeetUpTag from './meetups-tag.entity';
 class MeetUpService implements IBaseService<MeetUp>{
     constructor(private meetUpRepository: Repository<MeetUp>, private tagRepository: Repository<MeetUpTag>) { }
 
+    update = async (toUpdate: MeetUp, withUpdatedProperties: MeetUp): Promise<MeetUp> => {
+        toUpdate.description = withUpdatedProperties.description || toUpdate.description;
+        toUpdate.eventTime = withUpdatedProperties.eventTime || toUpdate.eventTime;
+        toUpdate.title = withUpdatedProperties.title || withUpdatedProperties.title;
+        toUpdate.tags = withUpdatedProperties.tags || toUpdate.tags;
+
+        return await this.save(toUpdate);
+    }
+
     save = async (meetup: MeetUp): Promise<MeetUp> => {
-        if (await this.meetUpRepository.exist({
-            where: {
-                title: meetup.title
-            }
-        })) {
-            throw new TypeORMError(`Meet up with ${meetup.title} title alreadyExists.`)
-        }
         meetup.tags = await Promise.all(meetup.tags.map(async tag => {
             if (await this.tagRepository.exist({
                 where: {
