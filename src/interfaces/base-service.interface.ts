@@ -7,5 +7,7 @@ export interface IBaseService<T extends ObjectLiteral> {
 
     save(value: T): Promise<T>;
 
+    update(toUpdate: T, withUpdatedProperties: T): Promise<T>;
+
     deleteById(id: number): Promise<void | never>;
 }
