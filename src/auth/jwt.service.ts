@@ -1,9 +1,9 @@
 import { AuthError } from "../errors/AuthError";
 import configEnv from "../utils/dotenv.config";
-import { sign, verify, decode, JwtPayload, JsonWebTokenError } from 'jsonwebtoken';
+import { sign, verify, JwtPayload, JsonWebTokenError } from 'jsonwebtoken';
 import { AccessTokenPayload } from "./tokens/access.token";
 import { RefreshTokenPayload } from "./tokens/refresh.token";
-import { User } from "./users/users.entity";
+import { User } from "../users";
 
 export type TokensPair = {
     accessToken: string,
