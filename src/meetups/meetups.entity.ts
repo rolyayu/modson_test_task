@@ -1,5 +1,6 @@
-import { Entity, Column, ManyToMany, JoinTable, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, ManyToMany, JoinTable, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import MeetUpTag from "./meetups-tag.entity";
+import { User } from "../auth/users/users.entity";
 
 @Entity({ name: 'meetups' })
 export default class MeetUp {
@@ -12,7 +13,6 @@ export default class MeetUp {
 
     @Column({
         type: "varchar",
-        unique: true,
         nullable: false
     })
     title: string;
@@ -28,6 +28,19 @@ export default class MeetUp {
         nullable: false
     })
     eventTime: Date;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @ManyToOne(() => User, {
+        nullable: false,
+        eager: true
+    })
+    @JoinColumn({
+        name: 'userId',
+        referencedColumnName: 'id'
+    })
+    createdBy: User
 
     @ManyToMany(() => MeetUpTag, {
         eager: true,
