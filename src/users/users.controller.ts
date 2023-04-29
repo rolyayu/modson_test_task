@@ -3,10 +3,10 @@ import { UserFactory } from "./users.factory";
 import { IUserService } from "./users.service.interface";
 import { User, UserRole } from "./users.entity";
 import { ResponseUserDto } from "./dto/response.user.dto";
-import { FailureResponse, internalError, notFound, ok } from "../../responses";
+import { FailureResponse, internalError, notFound, ok } from "../responses";
 import { UserMapper } from "./dto/users.mapper";
 import { Response } from "express";
-import { UserNotFoundError } from "../../errors/UserNotFoundError";
+import { UserNotFoundError } from "../errors/UserNotFoundError";
 import { Query } from "typeorm/driver/Query";
 
 

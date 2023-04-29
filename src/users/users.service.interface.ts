@@ -1,4 +1,4 @@
-import { IBaseService } from "../../interfaces";
+import { IBaseService } from "../interfaces";
 import { User } from "./users.entity";
 
 export interface IUserService extends IBaseService<User> {

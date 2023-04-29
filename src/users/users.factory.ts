@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
-import { IBaseFactory, IBaseService } from "../../interfaces";
+import { IBaseFactory, IBaseService } from "../interfaces";
 import { User } from "./users.entity";
-import { TypeOrmConnection } from "../../database";
+import { TypeOrmConnection } from "../database";
 import { UserService } from "./users.service";
 import { IUserService } from "./users.service.interface";
 

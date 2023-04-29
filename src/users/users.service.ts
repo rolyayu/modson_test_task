@@ -1,9 +1,9 @@
 import { FindOptionsWhere, Repository, TypeORMError } from "typeorm";
-import { IBaseFactory, IBaseService } from "../../interfaces";
+import { IBaseFactory, IBaseService } from "../interfaces";
 import { User, UserRole } from "./users.entity";
-import { AuthError } from "../../errors/AuthError";
+import { AuthError } from "../errors/AuthError";
 import { IUserService } from "./users.service.interface";
-import { UserNotFoundError } from "../../errors/UserNotFoundError";
+import { UserNotFoundError } from "../errors/UserNotFoundError";
 
 
 export class UserService implements IUserService {
