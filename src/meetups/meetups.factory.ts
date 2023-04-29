@@ -1,10 +1,8 @@
 import { Repository } from "typeorm";
-import { IBaseFactory, IBaseService } from "../interfaces";
-import MeetUp from "./meetups.entity";
+import { IBaseFactory } from "../interfaces";
 import { TypeOrmConnection } from "../database";
 import MeetUpService from "./meetups.service";
-import MeetUpTag from "./meetups-tag.entity";
-import { IMeetUpService } from "./meetups.service.interface";
+import { IMeetUpService, MeetUp, MeetUpTag } from "./";
 
 export class MeetUpFactory implements IBaseFactory<MeetUp, IMeetUpService> {
     createRepository = (): Repository<MeetUp> => {
