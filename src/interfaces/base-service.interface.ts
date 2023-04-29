@@ -3,7 +3,7 @@ import { FindOptionsWhere, ObjectLiteral } from "typeorm";
 
 export interface IBaseService<T extends ObjectLiteral> {
     findById(id: number): Promise<T | null>;
-    findAll(): Promise<T[]>;
+    findAll(startPos: number, pageSize: number): Promise<T[]>;
 
     save(value: T): Promise<T>;
 
