@@ -1,9 +1,9 @@
 import { Entity, Column, ManyToMany, JoinTable, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
-import MeetUpTag from "./meetups-tag.entity";
-import { User } from "../auth/users/users.entity";
+import { MeetUpTag } from "./";
+import { User } from "../users";
 
 @Entity({ name: 'meetups' })
-export default class MeetUp {
+export class MeetUp {
     @Column({
         type: "number",
         name: 'meetup_id'
