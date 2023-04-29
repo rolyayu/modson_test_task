@@ -1,11 +1,8 @@
-import { createExpressServer } from 'routing-controllers';
 import { DataSource } from 'typeorm';
 import configEnv from "./utils/dotenv.config";
 import { TypeOrmConnection } from './database';
 import { Express } from 'express';
-import MeetUp from './meetups/meetups.entity';
-import MeetUpTag from './meetups/meetups-tag.entity';
-import { MeetUpFactory } from './meetups/meetups.factory';
+import { ExpressServer } from './server/server';
 
 const bootstrapApp = async () => {
     configEnv();
@@ -17,18 +14,14 @@ const bootstrapApp = async () => {
 
 const bootstrapDB = async () => {
     const dataSource: DataSource = TypeOrmConnection.getConnection();
-    await dataSource.initialize()
-    await dataSource.synchronize(true)
-        .then(() => {
-            console.log('Connection established successfully.')
-        });
+    await dataSource.initialize();
+    await dataSource.runMigrations();
+    console.log('Connection established successfully.');
 }
 
 
 const bootstrapServer = async () => {
-    const app: Express = createExpressServer({
-        controllers: [__dirname + '/**/*.controller.ts']
-    });
+    const app: Express = ExpressServer.getServer();
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
         console.log(`Server succesfully started on ${PORT} port`);
