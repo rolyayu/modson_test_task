@@ -1,6 +1,6 @@
-import { User } from "../auth/users/users.entity";
+import { User } from "../users";
 import { IBaseService } from "../interfaces";
-import MeetUp from "./meetups.entity";
+import { MeetUp } from "./";
 
 export interface IMeetUpService extends IBaseService<MeetUp> {
     createMeetUp(meetUp: MeetUp, user: User): Promise<MeetUp>;
