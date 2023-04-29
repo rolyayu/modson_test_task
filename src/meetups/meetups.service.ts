@@ -1,11 +1,8 @@
-import MeetUp from './meetups.entity';
 import { Repository, TypeORMError } from 'typeorm';
-import { IBaseService } from '../interfaces/base-service.interface';
-import MeetUpTag from './meetups-tag.entity';
-import { IMeetUpService } from './meetups.service.interface';
-import { User } from '../auth/users/users.entity';
-import { MeetUpNotFoundError } from '../errors/MeetUpNotFoundError';
-import { NotAllowedError } from '../errors/NotAllowedError';
+import { User } from '../users/users.entity';
+import { MeetUpNotFoundError } from '../errors';
+import { NotAllowedError } from '../errors';
+import { MeetUp, MeetUpTag, IMeetUpService } from './'
 
 class MeetUpService implements IMeetUpService {
     constructor(private meetUpRepository: Repository<MeetUp>, private tagRepository: Repository<MeetUpTag>) { }
