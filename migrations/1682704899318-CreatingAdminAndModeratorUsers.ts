@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
-import { User, UserRole } from "../src/auth/users/users.entity"
-import { hash, hashSync } from 'bcryptjs'
+import { User, UserRole } from "../src/users"
+import { hashSync } from 'bcryptjs'
 
 export class CreatingAdminAndModeratorUsers1682704899318 implements MigrationInterface {
 
