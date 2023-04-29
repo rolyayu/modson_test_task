@@ -1,12 +1,13 @@
 import { Express, Request } from 'express';
-import { IUserService } from '../auth/users/users.service.interface';
 import { Action, createExpressServer } from 'routing-controllers';
 import { CurrentUserChecker } from 'routing-controllers/types/CurrentUserChecker';
-import { JwtService } from '../auth';
-import { UserFactory } from '../auth/users/users.factory';
 import { AuthorizationChecker } from 'routing-controllers/types/AuthorizationChecker';
-import { AuthError } from '../errors/AuthError';
-import { User } from '../auth/users/users.entity';
+
+import { JwtService } from '../auth';
+
+import { AuthError } from '../errors';
+
+import { UserFactory, IUserService, User } from '../users';
 
 export class ExpressServer {
     private static server: Express;
