@@ -2,9 +2,41 @@ import MeetUp from './meetups.entity';
 import { Repository, TypeORMError } from 'typeorm';
 import { IBaseService } from '../interfaces/base-service.interface';
 import MeetUpTag from './meetups-tag.entity';
+import { IMeetUpService } from './meetups.service.interface';
+import { User } from '../auth/users/users.entity';
+import { MeetUpNotFoundError } from '../errors/MeetUpNotFoundError';
+import { NotAllowedError } from '../errors/NotAllowedError';
 
-class MeetUpService implements IBaseService<MeetUp>{
+class MeetUpService implements IMeetUpService {
     constructor(private meetUpRepository: Repository<MeetUp>, private tagRepository: Repository<MeetUpTag>) { }
+
+    updateById = async (id: number, createdBy: User, withUpdatedProperties: MeetUp): Promise<MeetUp> => {
+        const foundedMeetUp = await this.findById(id);
+        if (!foundedMeetUp) {
+            throw new MeetUpNotFoundError(`Meet up with ${id} id doesn't exists.`);
+        }
+        if (foundedMeetUp.createdBy.username != createdBy.username) {
+            throw new NotAllowedError(`User ${createdBy.username} cannot delete this meet up`);
+        }
+        const updatedMeetUp = await this.update(foundedMeetUp, withUpdatedProperties);
+        return updatedMeetUp;
+    }
+
+    deleteByIdAccodingToUser = async (meetUpId: number, user: User): Promise<void> => {
+        const foundedMeetUp = await this.findById(meetUpId);
+        if (!foundedMeetUp) {
+            throw new MeetUpNotFoundError(`Meet up with ${meetUpId} id not exists.`)
+        }
+        if ((foundedMeetUp.createdBy.username != user.username)) {
+            throw new NotAllowedError(`User ${user.username} can't delete meet up with ${meetUpId} id.`)
+        }
+        await this.deleteById(meetUpId);
+    }
+
+    createMeetUp(meetUp: MeetUp, user: User): Promise<MeetUp> {
+        meetUp.createdBy = user;
+        return this.save(meetUp);
+    }
 
     update = async (toUpdate: MeetUp, withUpdatedProperties: MeetUp): Promise<MeetUp> => {
         toUpdate.description = withUpdatedProperties.description || toUpdate.description;
@@ -49,8 +81,15 @@ class MeetUpService implements IBaseService<MeetUp>{
     findById = async (id: number): Promise<MeetUp | null> => {
         return await this.meetUpRepository.findOneBy({ id });
     }
-    findAll = async (): Promise<MeetUp[]> => {
-        return await this.meetUpRepository.find();
+
+    findAll = async (startPos: number, pageSize: number): Promise<MeetUp[]> => {
+        const foundedMeetUps = await this.meetUpRepository.createQueryBuilder('meetups')
+            .skip(startPos)
+            .take(pageSize)
+            .innerJoinAndSelect('meetups.createdBy', 'user')
+            .innerJoinAndSelect('meetups.tags', 'tags')
+            .getMany();
+        return foundedMeetUps.filter(meetUp => meetUp);
     }
 }
 
