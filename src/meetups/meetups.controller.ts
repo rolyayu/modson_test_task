@@ -1,14 +1,12 @@
-import { JsonController, Get, HttpCode, Body, Param, Res, Delete, Put, Patch, QueryParams, QueryParam, Authorized, CurrentUser, HttpError, } from "routing-controllers";
-import { CreateMeetUpDto } from "./dto/create.dto";
-import { MeetUpFactory } from "./meetups.factory";
-import { MeetUpDtoMapper } from "./dto/meetups.mapper";
+import { JsonController, Get, HttpCode, Body, Param, Res, Delete, Put, Patch, QueryParam, Authorized, CurrentUser, HttpError, } from "routing-controllers";
 import { Response } from 'express';
-import { SuccessResponse, FailureResponse, forbidden, notFound, ok, badRequest, created, internalError, } from "../responses";
-import { IMeetUpService } from "./meetups.service.interface";
-import MeetUp from "./meetups.entity";
-import { IsPositive } from "class-validator";
-import { UpdateMeetUpDto } from "./dto/update.dto";
-import { User, UserRole } from "../auth/users/users.entity";
+import { SuccessResponse, FailureResponse, notFound, ok, created, internalError, } from "../responses";
+
+import { IMeetUpService, MeetUpFactory } from "./";
+
+import { User, UserRole } from "../users";
+
+import { CreateMeetUpDto, MeetUpDtoMapper, UpdateMeetUpDto } from "./dto";
 
 @JsonController('/api/meetups')
 export default class MeetupController {
