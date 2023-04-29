@@ -1,11 +1,8 @@
 import { Body, HttpError, JsonController, Post, QueryParam, Res } from "routing-controllers";
-import { AuthorizationResponse, badRequest, FailureResponse, created, SuccessResponse, internalError } from "../responses";
+import { AuthorizationResponse, FailureResponse, created, SuccessResponse, internalError } from "../responses";
 import { Response } from "express";
-import { AuthError } from "../errors/AuthError";
-import { RegisterUserDto } from "./users/dto/register.dto";
-import { LoginUserDto } from "./users/dto/login.dto";
-import { IAuthService } from "./auth.service.interface";
-import { AuthService } from "./auth.service";
+import { RegisterUserDto, LoginUserDto } from "../users/dto";
+import { IAuthService, AuthService } from "./";
 
 @JsonController('/api/auth')
 export class AuthController {
