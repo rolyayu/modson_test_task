@@ -1,16 +1,12 @@
 import { compare, compareSync, hashSync } from "bcryptjs";
 import { IAuthService } from "./auth.service.interface";
 import { JwtService, TokensPair } from "./jwt.service";
-import { User } from "./users/users.entity";
-import { UserFactory } from "./users/users.factory";
-import { IUserService } from "./users/users.service.interface";
 import { AuthError } from "../errors/AuthError";
 import { AuthorizationResponse } from "../responses";
-import { RegisterUserDto } from "./users/dto/register.dto";
-import { UserMapper } from "./users/dto/users.mapper";
-import { LoginUserDto } from "./users/dto/login.dto";
-import { ResponseUserDto } from "./users/dto/response.user.dto";
 
+import { RegisterUserDto, LoginUserDto, ResponseUserDto, UserMapper } from "../users/dto";
+
+import { User, UserFactory, IUserService } from "../users";
 
 export class AuthService implements IAuthService {
     private readonly userService: IUserService;
