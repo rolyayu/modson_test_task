@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('tags')
-export default class MeetUpTag {
+export class MeetUpTag {
     @Column({
         type: "number",
         name: 'tag_id'
