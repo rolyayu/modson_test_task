@@ -27,7 +27,7 @@ export class TypeOrmConnection {
                 database: process.env.PG_DATABASE,
                 entities: [entitiesPath],
                 logging: true,
-                synchronize: true
+                migrations: ['migrations/**/*.ts']
             }
         )
     }
