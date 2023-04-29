@@ -1,8 +1,6 @@
-import MeetUpTag from "../meetups-tag.entity";
-import MeetUp from "../meetups.entity";
-import { CreateMeetUpDto } from "./create.dto";
-import { ResponseMeetUpDto } from "./response.dto";
-import { UpdateMeetUpDto } from "./update.dto";
+import { CreateMeetUpDto, ResponseMeetUpDto, UpdateMeetUpDto } from "./";
+
+import { MeetUp, MeetUpTag } from './../'
 
 export class MeetUpDtoMapper {
     static mapCreateMeetUpDto = ({ title, description, eventTime, tags }: CreateMeetUpDto): MeetUp => {
