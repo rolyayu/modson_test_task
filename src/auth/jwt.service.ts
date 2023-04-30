@@ -28,7 +28,7 @@ export class JwtService {
             username,
             exp: accessTokenExpiration
         };
-        return sign(accessPayload, JwtService.getSecretKey());
+        return sign(accessPayload, JwtService.getAccessSecretKey());
     }
 
     private static generateRefreshTokenForUser = ({ id }: User): string => {
@@ -37,35 +37,60 @@ export class JwtService {
             userId: id,
             exp: refreshTokenExpiration
         }
-        return sign(refreshPayload, JwtService.getSecretKey())
+        return sign(refreshPayload, JwtService.getRefreshSecretKey())
     }
 
     static extractTokenFromHeader = (authHeader: string): string => {
         const parts = authHeader.split(' ');
         if (!parts) {
-            throw new AuthError(400, 'Request must contains Bearer and token devided by space.')
+            throw new AuthError(401, 'Request must contains Bearer and token devided by space.')
         } else if (parts[0] != 'Bearer') {
-            throw new AuthError(400, 'Auth header doesn\'t contain Bearer.')
+            throw new AuthError(401, 'Auth header doesn\'t contain Bearer.')
         }
         return parts[1];
     }
 
-    static isTokenValid(token: string): boolean {
+    static isAccessTokenValid = (token: string) => {
+        return this.isTokenValid(token, this.getAccessSecretKey());
+    }
+
+    static isRefreshTokenValid = (token: string) => {
+        return this.isTokenValid(token, this.getRefreshSecretKey());
+    }
+
+    private static isTokenValid = (token: string, key: string): boolean => {
         try {
-            verify(token, JwtService.getSecretKey());
+            verify(token, key);
             return true;
         } catch (e) {
+            console.log(e)
             return false;
         }
     }
 
-    static extractPayload(token: string): JwtPayload {
-        return verify(token, this.getSecretKey()) as JwtPayload;
+    static extractRefreshPayload = (token: string): JwtPayload => {
+        return verify(token, this.getRefreshSecretKey()) as JwtPayload;
     }
 
-    private static getSecretKey = (): string => {
+    static extractAccessPayload = (token: string): JwtPayload => {
+        return verify(token, this.getAccessSecretKey()) as JwtPayload;
+    }
+
+    private static getAccessSecretKey = (): string => {
         configEnv();
-        const secret = process.env.SECRET_KEY || 'omega lol';
+        const secret = process.env.ACCESS_SECRET_KEY;
+        if (!secret) {
+            throw new Error('Access key is not provided');
+        }
+        return secret;
+    }
+
+    private static getRefreshSecretKey = (): string => {
+        configEnv();
+        const secret = process.env.REFRESH_SECRET_KEY;
+        if (!secret) {
+            throw new Error('Refresh key is not provided');
+        }
         return secret;
     }
 
@@ -77,8 +102,8 @@ export class JwtService {
         return 'username' in payload;
     }
 
-    static getExp(token: string): number {
-        const exp = this.extractPayload(token).exp;
+    static getAccessTokenExp(token: string): number {
+        const exp = this.extractAccessPayload(token).exp;
         if (!exp) {
             throw new JsonWebTokenError(`Token doesn't have expiration time.`)
         } else {
