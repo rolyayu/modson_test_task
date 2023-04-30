@@ -35,7 +35,7 @@ export class ExpressServer {
                 throw new AuthError(402, 'Authorize to make this request.')
             }
             const accessToken = JwtService.extractTokenFromHeader(authHeader);
-            const payload = JwtService.extractPayload(accessToken);
+            const payload = JwtService.extractAccessPayload(accessToken);
             if (!JwtService.isAccess(payload)) {
                 throw new AuthError(400, 'Given token is not access.');
             }
@@ -53,7 +53,7 @@ export class ExpressServer {
             try {
                 const token = JwtService.extractTokenFromHeader(authHeader);
                 console.log(token);
-                const payload = JwtService.extractPayload(token);
+                const payload = JwtService.extractAccessPayload(token);
                 if (!JwtService.isAccess(payload)) {
                     return false;
                 }
