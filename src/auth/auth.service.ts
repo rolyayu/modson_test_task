@@ -27,30 +27,33 @@ export class AuthService implements IAuthService {
             throw new AuthError(404, `User with ${username} username doesn't exists.`);
         }
         if (!await compare(password, foundedUser.password)) {
-            throw new AuthError(400, 'Incorrect password.');
+            throw new AuthError(401, 'Incorrect password.');
         }
         const { refreshToken, accessToken } = JwtService.generateTokensForUser(foundedUser);
-        const userWithNewToken: User = structuredClone(foundedUser);
-        foundedUser.refreshToken = refreshToken;
+        const userWithNewToken = structuredClone<User>(foundedUser);
+        userWithNewToken.refreshToken = refreshToken;
         await this.userService.update(foundedUser, userWithNewToken);
         return {
             accessToken,
             refreshToken,
-            expiresIn: JwtService.getExp(accessToken)
+            expiresIn: JwtService.getAccessTokenExp(accessToken)
         };
     }
 
     refresh = async (token: string): Promise<AuthorizationResponse> => {
-        if (!JwtService.isTokenValid(token)) {
-            throw new AuthError(400, 'Given refresh token is not valid.');
+        if (!JwtService.isRefreshTokenValid(token)) {
+            throw new AuthError(401, 'Given refresh token is not valid.');
         }
-        const payload = JwtService.extractPayload(token);
+        const payload = JwtService.extractRefreshPayload(token);
         if (!JwtService.isRefresh(payload)) {
-            throw new AuthError(400, 'Given token is not refresh token.');
+            throw new AuthError(401, 'Given token is not refresh token.');
         }
         const { userId } = payload;
         const foundedUser = await this.userService.findById(userId);
-        if (!foundedUser || foundedUser.refreshToken != token) {
+        if (!foundedUser) {
+            throw new AuthError(401, 'There is no user with given token.');
+        }
+        if (foundedUser.refreshToken != token) {
             throw new AuthError(401, 'Given token is not relevant.');
         }
         const { refreshToken, accessToken } = JwtService.generateTokensForUser(foundedUser);
@@ -60,7 +63,7 @@ export class AuthService implements IAuthService {
         return {
             refreshToken,
             accessToken,
-            expiresIn: JwtService.getExp(accessToken)
+            expiresIn: JwtService.getAccessTokenExp(accessToken)
         }
 
     }
