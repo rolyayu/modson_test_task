@@ -23,21 +23,21 @@ export class JwtService {
     }
 
     private static generateAccessTokenForUser = ({ role, username }: User): string => {
-        const accessTokenExpiration = Date.now() + 1000 * 60 * 15;
         const accessPayload: AccessTokenPayload = {
             username,
-            exp: accessTokenExpiration
         };
-        return sign(accessPayload, JwtService.getAccessSecretKey());
+        return sign(accessPayload, JwtService.getAccessSecretKey(), {
+            expiresIn: '15 mins'
+        });
     }
 
     private static generateRefreshTokenForUser = ({ id }: User): string => {
-        const refreshTokenExpiration = Date.now() + 1000 * 60 * 60 * 24 * 30;
         const refreshPayload: RefreshTokenPayload = {
             userId: id,
-            exp: refreshTokenExpiration
         }
-        return sign(refreshPayload, JwtService.getRefreshSecretKey())
+        return sign(refreshPayload, JwtService.getRefreshSecretKey(), {
+            expiresIn: '30 days'
+        })
     }
 
     static extractTokenFromHeader = (authHeader: string): string => {
