@@ -1,0 +1,1 @@
+export { VerifyTokenMiddleware } from './verify.token.middleware';
