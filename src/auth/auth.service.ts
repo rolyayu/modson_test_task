@@ -24,10 +24,10 @@ export class AuthService implements IAuthService {
     login = async ({ username, password }: LoginUserDto): Promise<AuthorizationResponse> => {
         const foundedUser = await this.userService.findByUsername(username);
         if (!foundedUser) {
-            throw new AuthError(404, `User with ${username} username doesn't exists.`);
+            throw new AuthError(`User with ${username} username doesn't exists.`);
         }
         if (!await compare(password, foundedUser.password)) {
-            throw new AuthError(401, 'Incorrect password.');
+            throw new AuthError('Incorrect password.');
         }
         const { refreshToken, accessToken } = JwtService.generateTokensForUser(foundedUser);
         const userWithNewToken = structuredClone<User>(foundedUser);
@@ -42,19 +42,20 @@ export class AuthService implements IAuthService {
 
     refresh = async (token: string): Promise<AuthorizationResponse> => {
         if (!JwtService.isRefreshTokenValid(token)) {
-            throw new AuthError(401, 'Given refresh token is not valid.');
+            throw new AuthError('Given refresh token is not valid.');
         }
         const payload = JwtService.extractRefreshPayload(token);
         if (!JwtService.isRefresh(payload)) {
-            throw new AuthError(401, 'Given token is not refresh token.');
+            throw new AuthError('Given token is not refresh token.');
         }
         const { userId } = payload;
+
         const foundedUser = await this.userService.findById(userId);
         if (!foundedUser) {
-            throw new AuthError(401, 'There is no user with given token.');
+            throw new AuthError('There is no user with given token.');
         }
         if (foundedUser.refreshToken != token) {
-            throw new AuthError(401, 'Given token is not relevant.');
+            throw new AuthError('Given token is not relevant.');
         }
         const { refreshToken, accessToken } = JwtService.generateTokensForUser(foundedUser);
         const userWithNewToken: User = structuredClone(foundedUser);
