@@ -56,21 +56,16 @@ export class ExpressServer {
     private static authChecker = (): AuthorizationChecker => {
         return async (action: Action, roles: string[]): Promise<boolean> => {
             const req: Request = action.request;
-            const authHeader = req.header('Authorization');
-            const token = JwtService.extractTokenFromHeader(authHeader!);
-            console.log(token);
-            const payload = JwtService.extractAccessPayload(token);
-            if (!JwtService.isAccess(payload)) {
-                return false;
-            }
+            const { accessToken } = req.cookies;
+            const payload = JwtService.extractAccessPayload(accessToken);
             const user = await this.userService.findByUsername(payload.username);
             if (!user) {
                 return false;
             }
-            if (!roles) {
+            if (roles.length == 0) {
                 return true;
             }
-            if (!roles.find(role => role == user!.role.toString())) {
+            if (!roles.find(role => role == user.role)) {
                 return false;
             }
             return true;
