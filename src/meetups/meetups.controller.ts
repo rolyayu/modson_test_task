@@ -19,21 +19,21 @@ export default class MeetupController {
     }
 
     @Get()
+    @Authorized()
     async getAll(
         @QueryParam('startPos', { required: false }) startPos: number = 0,
         @QueryParam('pageSize', { required: false }) pageSize: number = 30
     ): Promise<SuccessResponse> {
         const meetUps = await this.meetUpService.findAll(startPos, pageSize);
-        console.log(meetUps);
         const mappedMeetUps = meetUps.map(meet => MeetUpDtoMapper.mapToResponseMeetUpDto(meet));
         return ok(mappedMeetUps);
     }
 
     @Get("/:id")
+    @Authorized()
     async getMeetUpById(@Param("id") id: number, @Res() response: Response): Promise<SuccessResponse | FailureResponse> {
         const foundedMeetup = await this.meetUpService.findById(id);
         if (!foundedMeetup) {
-            // throw new MeetUpNotFoundError(`Meet up with ${id} id doesn't exists.`);
             response.statusCode = 404;
             return notFound(`Meet up with ${id} id doesn't exists.`);
         }
