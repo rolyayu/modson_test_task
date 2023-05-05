@@ -1,4 +1,4 @@
-import { JsonController, Get, HttpCode, Body, Param, Res, Delete, Put, Patch, QueryParam, Authorized, CurrentUser, HttpError, } from "routing-controllers";
+import { JsonController, Get, HttpCode, Body, Param, Res, Delete, Put, Patch, QueryParam, Authorized, CurrentUser, HttpError, UseBefore, } from "routing-controllers";
 import { Response } from 'express';
 import { SuccessResponse, FailureResponse, notFound, ok, created, internalError, } from "../responses";
 
@@ -7,8 +7,11 @@ import { IMeetUpService, MeetUpFactory } from "./";
 import { User, UserRole } from "../users";
 
 import { CreateMeetUpDto, MeetUpDtoMapper, UpdateMeetUpDto } from "./dto";
+import { MeetUpNotFoundError } from "../errors";
+import { VerifyTokenMiddleware } from "../middlewares";
 
 @JsonController('/api/meetups')
+@UseBefore(VerifyTokenMiddleware)
 export default class MeetupController {
     private meetUpService: IMeetUpService;
     constructor() {
@@ -30,6 +33,7 @@ export default class MeetupController {
     async getMeetUpById(@Param("id") id: number, @Res() response: Response): Promise<SuccessResponse | FailureResponse> {
         const foundedMeetup = await this.meetUpService.findById(id);
         if (!foundedMeetup) {
+            // throw new MeetUpNotFoundError(`Meet up with ${id} id doesn't exists.`);
             response.statusCode = 404;
             return notFound(`Meet up with ${id} id doesn't exists.`);
         }
