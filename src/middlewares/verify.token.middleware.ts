@@ -6,13 +6,8 @@ import { internalError, unauthorized } from '../responses';
 Middleware({ type: 'before' })
 export class VerifyTokenMiddleware implements ExpressMiddlewareInterface {
     use(request: Request, response: Response, next: NextFunction) {
-        const authHeader = request.header('Authorization');
-        if (!authHeader) {
-            response.status(401).json(unauthorized('No Authorization header given'));
-            return;
-        }
+        const { accessToken } = request.cookies;
         try {
-            const accessToken = JwtService.extractTokenFromHeader(authHeader);
             const isTokenValid = JwtService.isAccessTokenValid(accessToken);
             if (!isTokenValid) {
                 response.status(401).json(unauthorized('Access token is not valid'));
