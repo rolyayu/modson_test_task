@@ -22,7 +22,7 @@ export class JwtService {
         };
     }
 
-    private static generateAccessTokenForUser = ({ role, username }: User): string => {
+    private static generateAccessTokenForUser = ({ username }: User): string => {
         const accessPayload: AccessTokenPayload = {
             username,
         };
@@ -43,9 +43,9 @@ export class JwtService {
     static extractTokenFromHeader = (authHeader: string): string => {
         const parts = authHeader.split(' ');
         if (!parts) {
-            throw new AuthError(401, 'Request must contains Bearer and token devided by space.')
+            throw new AuthError('Request must contains Bearer and token devided by space.')
         } else if (parts[0] != 'Bearer') {
-            throw new AuthError(401, 'Auth header doesn\'t contain Bearer.')
+            throw new AuthError('Auth header doesn\'t contain Bearer.')
         }
         return parts[1];
     }
@@ -63,7 +63,6 @@ export class JwtService {
             verify(token, key);
             return true;
         } catch (e) {
-            console.log(e)
             return false;
         }
     }
@@ -104,6 +103,14 @@ export class JwtService {
 
     static getAccessTokenExp(token: string): number {
         const exp = this.extractAccessPayload(token).exp;
+        if (!exp) {
+            throw new JsonWebTokenError(`Token doesn't have expiration time.`)
+        } else {
+            return exp;
+        }
+    }
+    static getRefreshTokenExp(token: string): number {
+        const exp = this.extractRefreshPayload(token).exp;
         if (!exp) {
             throw new JsonWebTokenError(`Token doesn't have expiration time.`)
         } else {
