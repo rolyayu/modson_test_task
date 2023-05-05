@@ -1,6 +1,6 @@
-import { compare, compareSync, hashSync } from "bcryptjs";
+import { compare, hashSync } from "bcryptjs";
 import { IAuthService } from "./auth.service.interface";
-import { JwtService, TokensPair } from "./jwt.service";
+import { JwtService } from "./jwt.service";
 import { AuthError } from "../errors/AuthError";
 import { AuthorizationResponse } from "../responses";
 

@@ -1,14 +1,8 @@
 import { AuthError } from "../errors/AuthError";
 import configEnv from "../utils/dotenv.config";
 import { sign, verify, JwtPayload, JsonWebTokenError } from 'jsonwebtoken';
-import { AccessTokenPayload } from "./tokens/access.token";
-import { RefreshTokenPayload } from "./tokens/refresh.token";
+import { AccessTokenPayload, TokensPair, RefreshTokenPayload } from "./../types";
 import { User } from "../users";
-
-export type TokensPair = {
-    accessToken: string,
-    refreshToken: string
-}
 
 export class JwtService {
 
@@ -40,6 +34,7 @@ export class JwtService {
         })
     }
 
+    //TODO delete unneeded
     static extractTokenFromHeader = (authHeader: string): string => {
         const parts = authHeader.split(' ');
         if (!parts) {
