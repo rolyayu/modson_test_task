@@ -1,8 +1,9 @@
-import { Body, CookieParam, HttpError, JsonController, Post, Req, Res, } from "routing-controllers";
+import { Authorized, Body, CookieParam, HttpError, JsonController, Post, Req, Res, UseBefore, } from "routing-controllers";
 import { FailureResponse, created, SuccessResponse, internalError } from "../responses";
 import { Request, Response } from "express";
 import { RegisterUserDto, LoginUserDto } from "../users/dto";
 import { IAuthService, AuthService } from "./";
+import { VerifyTokenMiddleware } from "../middlewares";
 
 @JsonController('/api/auth')
 export class AuthController {
@@ -60,7 +61,23 @@ export class AuthController {
         }
     }
 
+    @Post('/logout')
+    @UseBefore(VerifyTokenMiddleware)
+    @Authorized()
+    logout(
+        @Res() res: Response
+    ) {
+        console.log('Logging out');
+
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+        return res.sendStatus(200);
+    }
+
+
     @Post('/refresh')
+    @UseBefore(VerifyTokenMiddleware)
+    @Authorized()
     async refresh(
         @Req() req: Request,
         @Res() res: Response,
