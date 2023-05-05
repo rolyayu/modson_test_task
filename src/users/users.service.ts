@@ -1,5 +1,4 @@
-import { FindOptionsWhere, Repository, TypeORMError } from "typeorm";
-import { IBaseFactory, IBaseService } from "../interfaces";
+import { Repository, TypeORMError } from "typeorm";
 import { User, UserRole } from "./users.entity";
 import { AuthError } from "../errors/AuthError";
 import { IUserService } from "./users.service.interface";
@@ -58,7 +57,7 @@ export class UserService implements IUserService {
                 username: value.username
             }
         })) {
-            throw new AuthError(400, `User with ${value.username} username already exists.`)
+            throw new AuthError(`User with ${value.username} username already exists.`)
         }
 
         return await this.userRepository.save(value);
