@@ -7,6 +7,10 @@ Middleware({ type: 'before' })
 export class VerifyTokenMiddleware implements ExpressMiddlewareInterface {
     use(request: Request, response: Response, next: NextFunction) {
         const { accessToken } = request.cookies;
+        if (!accessToken) {
+            response.status(401).json(unauthorized('Access token is not given.'));
+            return;
+        }
         try {
             const isTokenValid = JwtService.isAccessTokenValid(accessToken);
             if (!isTokenValid) {
