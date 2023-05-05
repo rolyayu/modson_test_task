@@ -1,6 +1,6 @@
-import { Body, HttpError, JsonController, Post, QueryParam, Res } from "routing-controllers";
-import { AuthorizationResponse, FailureResponse, created, SuccessResponse, internalError } from "../responses";
-import { Response } from "express";
+import { Body, CookieParam, HttpError, JsonController, Post, Req, Res, } from "routing-controllers";
+import { FailureResponse, created, SuccessResponse, internalError } from "../responses";
+import { Request, Response } from "express";
 import { RegisterUserDto, LoginUserDto } from "../users/dto";
 import { IAuthService, AuthService } from "./";
 
@@ -14,7 +14,6 @@ export class AuthController {
     @Post('/register')
     async register(@Body({ validate: true }) register: RegisterUserDto, @Res() res: Response): Promise<SuccessResponse | FailureResponse> {
         try {
-            res.statusCode = 201;
             return created(
                 await this.authService.register(register)
             );
@@ -36,9 +35,18 @@ export class AuthController {
     async login(
         @Body({ validate: true }) login: LoginUserDto,
         @Res() res: Response
-    ): Promise<AuthorizationResponse | FailureResponse> {
+    ): Promise<Response | FailureResponse> {
         try {
-            return await this.authService.login(login);
+            const tokens = await this.authService.login(login);
+            res.cookie('refreshToken', tokens.refreshToken, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 15
+            })
+            res.cookie('accessToken', tokens.accessToken, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 15
+            })
+            return res.sendStatus(200);
         } catch (e) {
             if (e instanceof HttpError) {
                 res.statusCode = e.httpCode;
@@ -54,11 +62,23 @@ export class AuthController {
 
     @Post('/refresh')
     async refresh(
-        @QueryParam('refresh') token: string,
-        @Res() res: Response
-    ): Promise<AuthorizationResponse | FailureResponse> {
+        @Req() req: Request,
+        @Res() res: Response,
+        @CookieParam("refreshToken") refreshToken: string
+    ): Promise<Response | FailureResponse> {
         try {
-            return await this.authService.refresh(token);
+            const tokens = await this.authService.refresh(refreshToken);
+            console.log(req.cookies);
+            res.cookie('refreshToken', tokens.refreshToken, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 15
+            })
+            res.cookie('accessToken', tokens.accessToken, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 15
+            })
+            console.log(res.cookie)
+            return res.sendStatus(200);
         } catch (e) {
             if (e instanceof HttpError) {
                 res.statusCode = e.httpCode;
