@@ -1,2 +1,2 @@
-export { IBaseFactory } from './base-factory.interface';
-export { IBaseService } from './base-service.interface'
+export type { IBaseFactory } from './base-factory.interface';
+export type { IBaseService } from './base-service.interface';

@@ -1,38 +1,38 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum UserRole {
-    USER = 'user',
-    MANAGER = 'manager',
-    ADMIN = 'admin'
+  USER = 'user',
+  MANAGER = 'manager',
+  ADMIN = 'admin',
 }
 
 @Entity('users')
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({
-        unique: true,
-        nullable: false,
-        length: 40
-    })
-    username: string;
+  @Column({
+    unique: true,
+    nullable: false,
+    length: 40,
+  })
+  username: string;
 
-    @Column({
-        nullable: false,
-    })
-    password: string;
+  @Column({
+    nullable: false,
+  })
+  password: string;
 
-    @Column({
-        type: 'enum',
-        enum: UserRole,
-        default: UserRole.USER
-    })
-    role: UserRole;
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
 
-    @Column({
-        name: 'refresh_token',
-        nullable: true
-    })
-    refreshToken: string;
+  @Column({
+    name: 'refresh_token',
+    nullable: true,
+  })
+  refreshToken: string;
 }

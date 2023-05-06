@@ -1,5 +1,3 @@
-import { NotFoundError } from "./NotFoundError";
+import { NotFoundError } from './NotFoundError';
 
-export class MeetUpNotFoundError extends NotFoundError {
-
-}
+export class MeetUpNotFoundError extends NotFoundError {}
