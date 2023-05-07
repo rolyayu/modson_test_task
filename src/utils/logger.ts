@@ -7,27 +7,41 @@ export class LoggerFactory {
     static readonly getLogger = (className: string): Logger => {
         return createLogger({
             level: 'info',
-            transports: this.getTranports(),
-            format: this.getFormat(className),
+            transports: this.getTranports(className),
         });
     };
 
-    private static readonly getTranports = (): winston.transport[] => {
+    private static readonly getTranports = (className: string): winston.transport[] => {
         return process.env.NODE_ENV === 'production'
             ? [
-                new winston.transports.File({ filename: 'error.log', level: 'error' }),
-                new winston.transports.File({ filename: 'logs.log' }),
+                new winston.transports.File({
+                    filename: 'error.log', level: 'error',
+                    format: winston.format.combine(
+                        this.getFormat(className)
+                    )
+                }),
+                new winston.transports.File({
+                    filename: 'logs.log',
+                    format: winston.format.combine(
+                        this.getFormat(className)
+                    )
+                }),
             ]
             : [
-                new winston.transports.Console(),
-                new winston.transports.File({ filename: 'dummy.log' }),
+                new winston.transports.Console({ format: this.getFormat(className, false) }),
+                new winston.transports.File({
+                    filename: 'dummy.log',
+                    format: winston.format.combine(
+                        this.getFormat(className)
+                    )
+                }),
             ];
     };
 
-    private static readonly getFormat = (className: string): winston.Logform.Format => {
+    private static readonly getFormat = (className: string, isFile: boolean = true): winston.Logform.Format => {
         return format.printf(({ level, message }) => {
             const levelUpperCase = level.toUpperCase();
-            const colorizedLevel = this.getColorizedLevel(levelUpperCase);
+            const colorizedLevel = isFile ? levelUpperCase : this.getColorizedLevel(levelUpperCase);
             return `[${new Date().toISOString()}] [${className}] [${colorizedLevel}] ${message}`;
         });
     };
