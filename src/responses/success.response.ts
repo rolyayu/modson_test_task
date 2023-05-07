@@ -1,4 +1,4 @@
 export interface SuccessResponse {
-  successCode: number;
-  data: any;
+    successCode: number;
+    data: any;
 }
