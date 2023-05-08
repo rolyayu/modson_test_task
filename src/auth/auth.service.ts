@@ -50,9 +50,6 @@ export class AuthService implements IAuthService {
             throw new AuthError('Given refresh token is not valid.');
         }
         const payload = JwtService.extractRefreshPayload(token);
-        if (!JwtService.isRefresh(payload)) {
-            throw new AuthError('Given token is not refresh token.');
-        }
         const { userId } = payload;
 
         const foundedUser = await this.userService.findById(userId);

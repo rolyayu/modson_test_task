@@ -45,9 +45,6 @@ export class ExpressServer {
             const req: Request = action.request;
             const { accessToken } = req.cookies;
             const payload = JwtService.extractAccessPayload(accessToken);
-            if (!JwtService.isAccess(payload)) {
-                throw new AuthError('Given token is not access.');
-            }
             return await this.userService.findByUsername(payload.username);
         };
     };

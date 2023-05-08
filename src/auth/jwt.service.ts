@@ -76,14 +76,6 @@ export class JwtService {
         return secret;
     };
 
-    static isRefresh(payload: JwtPayload): payload is RefreshTokenPayload {
-        return 'userId' in payload;
-    }
-
-    static isAccess(payload: JwtPayload): payload is AccessTokenPayload {
-        return 'username' in payload;
-    }
-
     static getAccessTokenExp(token: string): number {
         const exp = this.extractAccessPayload(token).exp;
         if (!exp) {
