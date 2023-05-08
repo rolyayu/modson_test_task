@@ -7,9 +7,9 @@ class MeetUpService implements IMeetUpService {
     constructor(
         private readonly meetUpRepository: Repository<MeetUp>,
         private readonly tagRepository: Repository<MeetUpTag>
-    ) {}
+    ) { }
 
-    updateById = async (
+    updateByMeetupId = async (
         id: number,
         createdBy: User,
         withUpdatedProperties: MeetUp
@@ -25,7 +25,7 @@ class MeetUpService implements IMeetUpService {
         return updatedMeetUp;
     };
 
-    deleteByIdAccodingToUser = async (meetUpId: number, user: User): Promise<void> => {
+    deleteByMeetupIdAccodingToUser = async (meetUpId: number, user: User): Promise<void> => {
         const foundedMeetUp = await this.findById(meetUpId);
         if (foundedMeetUp == null) {
             throw new MeetUpNotFoundError(`Meet up with ${meetUpId} id not exists.`);

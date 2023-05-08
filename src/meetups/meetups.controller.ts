@@ -60,7 +60,7 @@ export default class MeetupController {
 
     @Get('/:id')
     @Authorized()
-    async getMeetUpById(
+    async getMeetUpByMeetupId(
         @Param('id') id: number,
         @CurrentUser({ required: true }) { username }: User
     ): Promise<SuccessResponse | FailureResponse> {
@@ -89,12 +89,12 @@ export default class MeetupController {
 
     @Delete('/:id')
     @Authorized([UserRole.MANAGER])
-    async deleteMeetUpById(
+    async deleteMeetUpByMeetupId(
         @Param('id') id: number,
         @Res() response: Response,
         @CurrentUser({ required: true }) user: User
     ): Promise<Response | FailureResponse> {
-        await this.meetUpService.deleteByIdAccodingToUser(id, user);
+        await this.meetUpService.deleteByMeetupIdAccodingToUser(id, user);
         this.logger.info(`Meetup with ${id} id successfully deleted by ${user.username}.`);
         return response.sendStatus(204);
     }
@@ -108,7 +108,7 @@ export default class MeetupController {
         @CurrentUser({ required: true }) user: User
     ): Promise<SuccessResponse | FailureResponse> {
         const withUpdatedProperties = MeetUpDtoMapper.mapUpdateMeetUpDto(updateDto);
-        const updatedMeetUp = await this.meetUpService.updateById(
+        const updatedMeetUp = await this.meetUpService.updateByMeetupId(
             id,
             user,
             withUpdatedProperties
