@@ -6,7 +6,6 @@ import {
     Param,
     Res,
     Delete,
-    Put,
     Patch,
     QueryParam,
     Authorized,
@@ -19,7 +18,6 @@ import { Response } from 'express';
 import {
     type SuccessResponse,
     type FailureResponse,
-    notFound,
     ok,
     created,
     internalError,
@@ -64,7 +62,6 @@ export default class MeetupController {
     @Authorized()
     async getMeetUpById(
         @Param('id') id: number,
-        @Res() response: Response,
         @CurrentUser({ required: true }) { username }: User
     ): Promise<SuccessResponse | FailureResponse> {
         const foundedMeetup = await this.meetUpService.findById(id);
@@ -96,23 +93,10 @@ export default class MeetupController {
         @Param('id') id: number,
         @Res() response: Response,
         @CurrentUser({ required: true }) user: User
-    ): Promise<SuccessResponse | FailureResponse> {
-        try {
-            await this.meetUpService.deleteByIdAccodingToUser(id, user);
-            this.logger.info(`Meetup with ${id} id successfully deleted by ${user.username}.`);
-            response.statusCode = 204;
-            return ok(`Meet up with ${id} successfully deleted`);
-        } catch (e) {
-            if (e instanceof HttpError) {
-                response.statusCode = e.httpCode;
-                return {
-                    errorCode: e.httpCode,
-                    message: e.message,
-                    name: e.name,
-                };
-            }
-            return internalError();
-        }
+    ): Promise<Response | FailureResponse> {
+        await this.meetUpService.deleteByIdAccodingToUser(id, user);
+        this.logger.info(`Meetup with ${id} id successfully deleted by ${user.username}.`);
+        return response.sendStatus(204);
     }
 
     @Patch('/:id')
@@ -123,28 +107,16 @@ export default class MeetupController {
         @Param('id') id: number,
         @CurrentUser({ required: true }) user: User
     ): Promise<SuccessResponse | FailureResponse> {
-        try {
-            const withUpdatedProperties = MeetUpDtoMapper.mapUpdateMeetUpDto(updateDto);
-            const updatedMeetUp = await this.meetUpService.updateById(
-                id,
-                user,
-                withUpdatedProperties
-            );
-            const mappedResponse = MeetUpDtoMapper.mapToResponseMeetUpDto(updatedMeetUp);
-            this.logger.info(
-                `User ${user.username} updated meetup with ${id} id: ${mappedResponse}`
-            );
-            return ok(mappedResponse);
-        } catch (e) {
-            if (e instanceof HttpError) {
-                resp.statusCode = e.httpCode;
-                return {
-                    errorCode: e.httpCode,
-                    message: e.message,
-                    name: e.name,
-                };
-            }
-            return internalError();
-        }
+        const withUpdatedProperties = MeetUpDtoMapper.mapUpdateMeetUpDto(updateDto);
+        const updatedMeetUp = await this.meetUpService.updateById(
+            id,
+            user,
+            withUpdatedProperties
+        );
+        const mappedResponse = MeetUpDtoMapper.mapToResponseMeetUpDto(updatedMeetUp);
+        this.logger.info(
+            `User ${user.username} updated meetup with ${id} id: ${mappedResponse}`
+        );
+        return ok(mappedResponse);
     }
 }

@@ -3,14 +3,13 @@ import {
     Body,
     CookieParam,
     CurrentUser,
-    HttpError,
     JsonController,
     Post,
     Req,
     Res,
     UseBefore,
 } from 'routing-controllers';
-import { type FailureResponse, created, type SuccessResponse, internalError } from '../responses';
+import { type FailureResponse, created, type SuccessResponse } from '../responses';
 import { Request, Response } from 'express';
 import { RegisterUserDto, LoginUserDto } from '../users/dto';
 import { type IAuthService, AuthService, JwtService } from './';
@@ -33,23 +32,9 @@ export class AuthController {
         @Body({ validate: true }) register: RegisterUserDto,
         @Res() res: Response
     ): Promise<SuccessResponse | FailureResponse> {
-        try {
-            const registeredUser = await this.authService.register(register);
-            this.logger.info(`User with ${registeredUser.username} username just registered.`);
-            return created(registeredUser);
-        } catch (e) {
-            if (e instanceof HttpError) {
-                res.statusCode = e.httpCode;
-                this.logger.error(e.message);
-                return {
-                    errorCode: e.httpCode,
-                    message: e.message,
-                };
-            } else {
-                res.statusCode = 500;
-                return internalError();
-            }
-        }
+        const registeredUser = await this.authService.register(register);
+        this.logger.info(`User with ${registeredUser.username} username just registered.`);
+        return created(registeredUser);
     }
 
     @Post('/login')
@@ -57,30 +42,17 @@ export class AuthController {
         @Body({ validate: true }) login: LoginUserDto,
         @Res() res: Response
     ): Promise<Response | FailureResponse> {
-        try {
-            const tokens = await this.authService.login(login);
-            res.cookie('refreshToken', tokens.refreshToken, {
-                httpOnly: true,
-                maxAge: 1000 * 60 * 60 * 24 * 15,
-            });
-            res.cookie('accessToken', tokens.accessToken, {
-                httpOnly: true,
-                maxAge: 1000 * 60 * 60 * 24 * 15,
-            });
-            this.logger.info(`User ${login.username} logged in.`);
-            return res.sendStatus(200);
-        } catch (e) {
-            if (e instanceof HttpError) {
-                res.statusCode = e.httpCode;
-                this.logger.error(e.message);
-                return {
-                    errorCode: e.httpCode,
-                    message: e.message,
-                };
-            } else {
-                return internalError();
-            }
-        }
+        const tokens = await this.authService.login(login);
+        res.cookie('refreshToken', tokens.refreshToken, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 15,
+        });
+        res.cookie('accessToken', tokens.accessToken, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 15,
+        });
+        this.logger.info(`User ${login.username} logged in.`);
+        return res.sendStatus(200);
     }
 
     @Post('/logout')
@@ -103,28 +75,16 @@ export class AuthController {
         @CookieParam('refreshToken') refreshToken: string,
         @CurrentUser({ required: true }) { username }: User
     ): Promise<Response | FailureResponse> {
-        try {
-            const tokens = await this.authService.refresh(refreshToken);
-            res.cookie('refreshToken', tokens.refreshToken, {
-                httpOnly: true,
-                maxAge: 1000 * 60 * 60 * 24 * 15,
-            });
-            res.cookie('accessToken', tokens.accessToken, {
-                httpOnly: true,
-                maxAge: 1000 * 60 * 60 * 24 * 15,
-            });
-            this.logger.info(`Updated tokens for ${username}.`);
-            return res.sendStatus(200);
-        } catch (e) {
-            if (e instanceof HttpError) {
-                res.statusCode = e.httpCode;
-                return {
-                    errorCode: e.httpCode,
-                    message: e.message,
-                };
-            } else {
-                return internalError();
-            }
-        }
+        const tokens = await this.authService.refresh(refreshToken);
+        res.cookie('refreshToken', tokens.refreshToken, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 15,
+        });
+        res.cookie('accessToken', tokens.accessToken, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 15,
+        });
+        this.logger.info(`Updated tokens for ${username}.`);
+        return res.sendStatus(200);
     }
 }
