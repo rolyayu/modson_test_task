@@ -17,6 +17,7 @@ import { VerifyTokenMiddleware } from '../middlewares';
 import { LoggerFactory } from '../utils';
 import { type Logger } from 'winston';
 import { User } from '../users';
+import { constants } from '../shared';
 
 @JsonController('/api/auth')
 export class AuthController {
@@ -45,11 +46,11 @@ export class AuthController {
         const tokens = await this.authService.login(login);
         res.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 15,
+            maxAge: constants.refreshCookieMaxAge,
         });
         res.cookie('accessToken', tokens.accessToken, {
             httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 15,
+            maxAge: constants.accessCookieMaxAge,
         });
         this.logger.info(`User ${login.username} logged in.`);
         return res.sendStatus(200);
@@ -78,11 +79,11 @@ export class AuthController {
         const tokens = await this.authService.refresh(refreshToken);
         res.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 15,
+            maxAge: constants.refreshCookieMaxAge,
         });
         res.cookie('accessToken', tokens.accessToken, {
             httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 15,
+            maxAge: constants.accessCookieMaxAge,
         });
         this.logger.info(`Updated tokens for ${username}.`);
         return res.sendStatus(200);

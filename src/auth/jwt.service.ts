@@ -3,6 +3,7 @@ import configEnv from '../utils/dotenv.config';
 import { sign, verify, type JwtPayload, JsonWebTokenError } from 'jsonwebtoken';
 import { type AccessTokenPayload, type TokensPair, type RefreshTokenPayload } from './../types';
 import { type User } from '../users';
+import { constants } from '../shared';
 
 export class JwtService {
     static generateTokensForUser = (user: User): TokensPair => {
@@ -20,7 +21,7 @@ export class JwtService {
             username,
         };
         return sign(accessPayload, JwtService.getAccessSecretKey(), {
-            expiresIn: '15 mins',
+            expiresIn: constants.accessTokenExpiration,
         });
     };
 
@@ -29,7 +30,7 @@ export class JwtService {
             userId: id,
         };
         return sign(refreshPayload, JwtService.getRefreshSecretKey(), {
-            expiresIn: '30 days',
+            expiresIn: constants.refreshTokenExpiration,
         });
     };
 
