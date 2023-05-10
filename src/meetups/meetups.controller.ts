@@ -10,7 +10,6 @@ import {
     QueryParam,
     Authorized,
     CurrentUser,
-    HttpError,
     UseBefore,
     Post,
 } from 'routing-controllers';
@@ -20,7 +19,6 @@ import {
     type FailureResponse,
     ok,
     created,
-    internalError,
 } from '../responses';
 
 import { type IMeetUpService, MeetUpFactory } from './';
@@ -32,10 +30,12 @@ import { MeetUpNotFoundError } from '../errors';
 import { VerifyTokenMiddleware } from '../middlewares';
 import { type Logger } from 'winston';
 import { LoggerFactory } from '../utils';
+import { ListMeetUpDto } from './dto/list.dto';
 
 @JsonController('/api/meetups')
 @UseBefore(VerifyTokenMiddleware)
 export default class MeetupController {
+
     private readonly meetUpService: IMeetUpService;
     private readonly logger: Logger;
     constructor() {
@@ -49,13 +49,19 @@ export default class MeetupController {
         @QueryParam('startPos', { required: false }) startPos = 0,
         @QueryParam('pageSize', { required: false }) pageSize = 30,
         @CurrentUser({ required: true }) { username }: User
-    ): Promise<SuccessResponse> {
+    ): Promise<ListMeetUpDto> {
         const meetUps = await this.meetUpService.findAll(startPos, pageSize);
         const mappedMeetUps = meetUps.map((meet) => MeetUpDtoMapper.mapToResponseMeetUpDto(meet));
+        const totalCount = await this.meetUpService.getCount();
         this.logger.info(
-            `User ${username} requested meetups from ${startPos} to ${startPos + pageSize}.`
+            `User ${username} requested meetups from ${startPos} to ${startPos + pageSize}. Total count: ${totalCount}.`
         );
-        return ok(mappedMeetUps);
+        const list: ListMeetUpDto = {
+            totalCount,
+            startPos, pageSize,
+            meetups: mappedMeetUps
+        };
+        return list;
     }
 
     @Get('/:id')

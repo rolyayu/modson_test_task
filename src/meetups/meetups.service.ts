@@ -9,6 +9,12 @@ class MeetUpService implements IMeetUpService {
         private readonly tagRepository: Repository<MeetUpTag>
     ) { }
 
+    getCount = async (): Promise<number> => {
+        return await this.meetUpRepository
+            .createQueryBuilder('meetups')
+            .getCount();
+    }
+
     updateByMeetupId = async (
         id: number,
         createdBy: User,
