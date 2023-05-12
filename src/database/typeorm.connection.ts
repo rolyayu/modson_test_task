@@ -5,7 +5,7 @@ import configEnv from '../utils/dotenv.config';
 export class TypeOrmConnection {
     private static connection: DataSource;
 
-    private constructor() {}
+    private constructor() { }
 
     public static getConnection = (): DataSource => {
         if (!this.connection) {
@@ -26,6 +26,7 @@ export class TypeOrmConnection {
             database: process.env.PG_DATABASE,
             entities: [entitiesPath],
             logging: process.env.NODE_ENV == 'development',
+            synchronize: true, //TODO delete in prod
             migrations: ['migrations/**/*.ts'],
         });
     };
