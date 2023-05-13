@@ -1,5 +1,5 @@
 import express, { type Express, type Request } from 'express';
-import { type Action, type RoutingControllersOptions, useExpressServer } from 'routing-controllers';
+import { type Action, type RoutingControllersOptions, useExpressServer, getMetadataArgsStorage } from 'routing-controllers';
 import { type CurrentUserChecker } from 'routing-controllers/types/CurrentUserChecker';
 import { type AuthorizationChecker } from 'routing-controllers/types/AuthorizationChecker';
 
@@ -9,6 +9,11 @@ import { JwtService } from '../auth';
 import { UserFactory, type IUserService, type User } from '../users';
 import { GlobalErrorHanlder } from '../middlewares';
 import cookieParser from 'cookie-parser';
+import { routingControllersToSpec } from 'routing-controllers-openapi';
+
+import * as swaggerUiExpress from 'swagger-ui-express'
+
+
 
 export class ExpressServer {
     private static server: Express;
@@ -21,6 +26,24 @@ export class ExpressServer {
             const expressServer: Express = express();
             expressServer.use(cookieParser());
             this.server = useExpressServer(expressServer, this.getRoutingControllersParams());
+            const storage = getMetadataArgsStorage();
+            const spec = routingControllersToSpec(storage, this.getRoutingControllersParams(), {
+                components: {
+                    securitySchemes: {
+                        basicAuth: {
+                            scheme: 'basic',
+                            type: 'http',
+                        },
+                    },
+                },
+                info: {
+                    description: 'Generated with `routing-controllers-openapi`',
+                    title: 'A sample API',
+                    version: '1.0.0',
+                },
+            })
+
+            this.server.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(spec))
         }
         return this.server;
     };

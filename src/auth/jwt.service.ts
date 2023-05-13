@@ -1,4 +1,4 @@
-import { AuthError } from '../shared/AuthError';
+import { AuthError } from '../shared';
 import configEnv from '../utils/dotenv.config';
 import { sign, verify, type JwtPayload, JsonWebTokenError } from 'jsonwebtoken';
 import { type AccessTokenPayload, type TokensPair, type RefreshTokenPayload } from './../types';

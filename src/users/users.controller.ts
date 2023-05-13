@@ -15,7 +15,7 @@ import { type ResponseUserDto } from './dto/response.user.dto';
 import { type FailureResponse, internalError, notFound, ok } from '../shared';
 import { UserMapper } from './dto/users.mapper';
 import { Response } from 'express';
-import { UserNotFoundError } from '../shared/UserNotFoundError';
+import { UserNotFoundError } from '../shared';
 import { Query } from 'typeorm/driver/Query';
 
 @JsonController('/users')

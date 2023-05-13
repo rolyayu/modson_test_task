@@ -1,8 +1,8 @@
 import { type Repository, TypeORMError } from 'typeorm';
 import { type User, UserRole } from './users.entity';
-import { AuthError } from '../shared/AuthError';
+import { AuthError } from '../shared';
 import { type IUserService } from './users.service.interface';
-import { UserNotFoundError } from '../shared/UserNotFoundError';
+import { UserNotFoundError } from '../shared';
 
 export class UserService implements IUserService {
     constructor(private readonly userRepository: Repository<User>) { }
