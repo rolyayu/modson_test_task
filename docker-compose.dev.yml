@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  api:
+    build:
+      dockerfile: Dockerfile.dev
+    ports:
+      - 5412:5412
+    depends_on:
+      - psql
+    environment:
+      - PORT=5412
+      - PG_HOST=psql
+      - PG_PORT=5432
+      - PG_USERNAME=postgres
+      - PG_PASSWORD=password
+      - PG_DATABASE=modsen_test_task
+      - ACCESS_SECRET_KEY=dt+6OIHwwP3/iDByugqLAcAJ/PiOwaWUHDkihAGXmZ9djUDX0GhybL9hu7snJxglsZqHawDYaBjCHbnDByBpO7jaC3SnG+jxe+yomZwwfZfvTMWpXWmaDN5wojkcvSrTNSj8rvlp/4qiz+wf9QhpPy5YHAvQJdVfOBZJ8vxeDtk=
+      - REFRESH_SECRET_KEY=KE9/VtVQOwCluLEb+98l+t4iQSk1WV1bQBlrzAl8gNJcGZACcvwqm5zvs03EX9h7itO4hLKgI5lco4PaRnt/3daZe7L9Y4T+tWE5mkJ+2P3vfx6k60pnnKNzs2leJvIIXue7svNUHz3NRr//P/maApVfoV1fUFMtdmBIbC+hwp0=
+  psql:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=modsen_test_task
+      - POSTGRES_USER=postgres
