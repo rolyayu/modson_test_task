@@ -5,11 +5,15 @@ import { AuthError } from '../shared';
 import { type AuthorizationResponse } from '../shared';
 
 import {
-    type RegisterUserDto,
-    type LoginUserDto,
     type ResponseUserDto,
     UserMapper,
 } from '../users/dto';
+
+import {
+    type RegisterUserDto,
+    type LoginUserDto,
+    AuthMapper
+} from './dto'
 
 import { type User, UserFactory, type IUserService } from '../users';
 
@@ -20,7 +24,7 @@ export class AuthService implements IAuthService {
     }
 
     register = async (register: RegisterUserDto): Promise<ResponseUserDto> => {
-        const user = UserMapper.mapRegisterUserDto(register);
+        const user = AuthMapper.mapRegisterUserDto(register);
         user.password = hashSync(user.password);
         const savedUser = await this.userService.save(user);
         return UserMapper.mapUserToResponseDto(savedUser);

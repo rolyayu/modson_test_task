@@ -11,7 +11,7 @@ import {
 } from 'routing-controllers';
 import { type FailureResponse, created, type SuccessResponse } from '../shared';
 import { Request, Response } from 'express';
-import { RegisterUserDto, LoginUserDto } from '../users/dto';
+import { RegisterUserDto, LoginUserDto } from './dto';
 import { type IAuthService, AuthService, JwtService } from './';
 import { VerifyTokenMiddleware } from '../middlewares';
 import { LoggerFactory } from '../utils';
