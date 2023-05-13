@@ -9,7 +9,7 @@ import {
     Res,
     UseBefore,
 } from 'routing-controllers';
-import { type FailureResponse, created, type SuccessResponse } from '../responses';
+import { type FailureResponse, created, type SuccessResponse } from '../shared';
 import { Request, Response } from 'express';
 import { RegisterUserDto, LoginUserDto } from '../users/dto';
 import { type IAuthService, AuthService, JwtService } from './';

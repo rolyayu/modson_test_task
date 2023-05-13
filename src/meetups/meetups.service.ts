@@ -1,6 +1,6 @@
 import { type Repository, TypeORMError } from 'typeorm';
 import { type User } from '../users/users.entity';
-import { MeetUpNotFoundError, NotAllowedError } from '../errors';
+import { MeetUpNotFoundError, NotAllowedError } from '../shared';
 import { type MeetUp, type MeetUpTag, type IMeetUpService } from './';
 
 class MeetUpService implements IMeetUpService {

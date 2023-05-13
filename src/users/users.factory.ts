@@ -1,5 +1,5 @@
 import { type Repository } from 'typeorm';
-import { type IBaseFactory, IBaseService } from '../interfaces';
+import { type IBaseFactory, IBaseService } from '../shared';
 import { User } from './users.entity';
 import { TypeOrmConnection } from '../database';
 import { UserService } from './users.service';

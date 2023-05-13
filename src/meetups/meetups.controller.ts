@@ -19,14 +19,14 @@ import {
     type FailureResponse,
     ok,
     created,
-} from '../responses';
+} from '../shared';
 
 import { type IMeetUpService, MeetUpFactory } from './';
 
 import { User, UserRole } from '../users';
 
 import { CreateMeetUpDto, MeetUpDtoMapper, UpdateMeetUpDto } from './dto';
-import { MeetUpNotFoundError } from '../errors';
+import { MeetUpNotFoundError } from '../shared';
 import { VerifyTokenMiddleware } from '../middlewares';
 import { type Logger } from 'winston';
 import { LoggerFactory } from '../utils';

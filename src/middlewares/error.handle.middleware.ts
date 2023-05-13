@@ -1,6 +1,6 @@
 import { type Request, type Response } from 'express';
 import { type ExpressErrorMiddlewareInterface, HttpError, Middleware } from 'routing-controllers';
-import { internalError } from '../responses';
+import { internalError } from '../shared';
 import { Logger } from 'winston';
 import { LoggerFactory } from '../utils';
 

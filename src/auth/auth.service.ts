@@ -1,8 +1,8 @@
 import { compare, hashSync } from 'bcryptjs';
 import { type IAuthService } from './auth.service.interface';
 import { JwtService } from './jwt.service';
-import { AuthError } from '../errors/AuthError';
-import { type AuthorizationResponse } from '../responses';
+import { AuthError } from '../shared/AuthError';
+import { type AuthorizationResponse } from '../shared';
 
 import {
     type RegisterUserDto,

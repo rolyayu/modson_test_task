@@ -1,7 +1,7 @@
 import { Middleware, type ExpressMiddlewareInterface, HttpError } from 'routing-controllers';
 import { type Response, type Request, type NextFunction } from 'express';
 import { JwtService } from '../auth';
-import { internalError, unauthorized } from '../responses';
+import { internalError, unauthorized } from '../shared';
 
 Middleware({ type: 'before' });
 export class VerifyTokenMiddleware implements ExpressMiddlewareInterface {

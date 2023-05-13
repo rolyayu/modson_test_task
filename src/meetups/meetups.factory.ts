@@ -1,5 +1,5 @@
 import { type Repository } from 'typeorm';
-import { type IBaseFactory } from '../interfaces';
+import { type IBaseFactory } from '../shared';
 import { TypeOrmConnection } from '../database';
 import MeetUpService from './meetups.service';
 import { type IMeetUpService, MeetUp, MeetUpTag } from './';

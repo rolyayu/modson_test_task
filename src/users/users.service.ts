@@ -1,11 +1,11 @@
 import { type Repository, TypeORMError } from 'typeorm';
 import { type User, UserRole } from './users.entity';
-import { AuthError } from '../errors/AuthError';
+import { AuthError } from '../shared/AuthError';
 import { type IUserService } from './users.service.interface';
-import { UserNotFoundError } from '../errors/UserNotFoundError';
+import { UserNotFoundError } from '../shared/UserNotFoundError';
 
 export class UserService implements IUserService {
-    constructor(private readonly userRepository: Repository<User>) {}
+    constructor(private readonly userRepository: Repository<User>) { }
 
     grantManagerRoleById = async (userId: number): Promise<User> => {
         const foundedUser = await this.userRepository.findOneBy({ id: userId });

@@ -1,5 +1,5 @@
 import { type User } from '../users';
-import { type IBaseService } from '../interfaces';
+import { type IBaseService } from '../shared';
 import { type MeetUp } from './';
 
 export interface IMeetUpService extends IBaseService<MeetUp> {
