@@ -18,6 +18,9 @@ import { LoggerFactory } from '../utils';
 import { type Logger } from 'winston';
 import { User } from '../users';
 import { constants } from '../shared';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
+import { ResponseUserDto } from '../users/dto';
+import { AuthOpenAPI } from './auth.openapi';
 
 @JsonController('/api/auth')
 export class AuthController {
@@ -29,6 +32,8 @@ export class AuthController {
     }
 
     @Post('/register')
+    @ResponseSchema(ResponseUserDto)
+    @OpenAPI(AuthOpenAPI.register)
     async register(
         @Body({ validate: true }) register: RegisterUserDto,
         @Res() res: Response
@@ -39,6 +44,7 @@ export class AuthController {
     }
 
     @Post('/login')
+    @OpenAPI(AuthOpenAPI.login)
     async login(
         @Body({ validate: true }) login: LoginUserDto,
         @Res() res: Response
@@ -59,6 +65,7 @@ export class AuthController {
     @Post('/logout')
     @UseBefore(VerifyTokenMiddleware)
     @Authorized()
+    @OpenAPI(AuthOpenAPI.logout)
     logout(@Res() res: Response, @CookieParam('accessToken') accessToken: string) {
         const username = JwtService.extractAccessPayload(accessToken).username;
         this.logger.info(`User ${username} logger out.`);
@@ -70,6 +77,7 @@ export class AuthController {
     @Post('/refresh')
     @UseBefore(VerifyTokenMiddleware)
     @Authorized()
+    @OpenAPI(AuthOpenAPI.refresh)
     async refresh(
         @Req() req: Request,
         @Res() res: Response,

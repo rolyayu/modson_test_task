@@ -12,7 +12,7 @@ import cookieParser from 'cookie-parser';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 
 import * as swaggerUiExpress from 'swagger-ui-express'
-
+import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 
 
 export class ExpressServer {
@@ -26,19 +26,30 @@ export class ExpressServer {
             const expressServer: Express = express();
             expressServer.use(cookieParser());
             this.server = useExpressServer(expressServer, this.getRoutingControllersParams());
+
+            const schemas = validationMetadatasToSchemas({
+                refPointerPrefix: '#/components/schemas/',
+            })
+
             const storage = getMetadataArgsStorage();
             const spec = routingControllersToSpec(storage, this.getRoutingControllersParams(), {
                 components: {
+                    schemas,
                     securitySchemes: {
                         basicAuth: {
                             scheme: 'basic',
                             type: 'http',
                         },
+                        bearerAuth: {
+                            scheme: 'bearer',
+                            type: 'apiKey',
+                            name: 'accessToken'
+                        }
                     },
                 },
                 info: {
                     description: 'Generated with `routing-controllers-openapi`',
-                    title: 'A sample API',
+                    title: 'Meet ups API',
                     version: '1.0.0',
                 },
             })
