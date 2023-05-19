@@ -10,22 +10,28 @@ import {
 } from 'routing-controllers';
 import { UserFactory } from './users.factory';
 import { IUserService } from './users.service.interface';
-import { User, UserRole } from './users.entity';
-import { type ResponseUserDto } from './dto/response.user.dto';
-import { type FailureResponse, internalError, notFound, ok } from '../shared';
+import { UserRole } from './users.entity';
+import { ResponseUserDto } from './dto/response.user.dto';
+import { type FailureResponse, internalError } from '../shared';
 import { UserMapper } from './dto/users.mapper';
 import { Response } from 'express';
-import { UserNotFoundError } from '../shared';
-import { Query } from 'typeorm/driver/Query';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
+import { UsersOpenAPI } from './users.openapi';
 
 @JsonController('/users')
+@Authorized([UserRole.ADMIN])
+@OpenAPI(UsersOpenAPI.controller)
 export class UserController {
     constructor(private readonly userService: IUserService) {
         this.userService = new UserFactory().buildService();
     }
 
     @Get()
-    @Authorized([UserRole.ADMIN])
+    @OpenAPI(UsersOpenAPI.findAll)
+    @ResponseSchema(ResponseUserDto, {
+        isArray:true,
+        statusCode:200
+    })
     async findAll(
         @QueryParam('startPos', { required: false }) startPos = 0,
         @QueryParam('pageSize', { required: false }) pageSize = 30
@@ -35,23 +41,16 @@ export class UserController {
     }
 
     @Patch('/:id')
-    @Authorized([UserRole.ADMIN])
+    @OpenAPI(UsersOpenAPI.grantModeratorRole)
+    @ResponseSchema(ResponseSchema, {
+        statusCode:200,
+        description:'Returns user with updated role'
+    })
     async grantModeratorRole(
         @Param('id') id: number,
         @Res() res: Response
-    ): Promise<FailureResponse | ResponseUserDto> {
-        try {
-            const userWithGrantedRole = await this.userService.grantManagerRoleById(id);
-            return UserMapper.mapUserToResponseDto(userWithGrantedRole);
-        } catch (e) {
-            if (e instanceof HttpError) {
-                res.statusCode = e.httpCode;
-                return {
-                    errorCode: e.httpCode,
-                    message: e.message,
-                };
-            }
-            return internalError();
-        }
+    ): Promise<ResponseUserDto> {
+        const userWithGrantedRole = await this.userService.grantManagerRoleById(id);
+        return UserMapper.mapUserToResponseDto(userWithGrantedRole);
     }
 }
