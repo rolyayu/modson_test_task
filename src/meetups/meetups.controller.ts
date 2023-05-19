@@ -36,11 +36,7 @@ import { MeetupsOpenAPI } from './meetups.openapi';
 
 @JsonController('/api/meetups')
 @UseBefore(VerifyTokenMiddleware)
-@OpenAPI({
-    security: [{
-        bearerAuth: [],
-    }],
-})
+@OpenAPI(MeetupsOpenAPI.controller)
 export default class MeetupController {
 
     private readonly meetUpService: IMeetUpService;

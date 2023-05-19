@@ -3,6 +3,16 @@ import { getDefaultError, OkApiResponse } from "../utils";
 import { CreateMeetUpDto, UpdateMeetUpDto } from "./dto";
 
 export const MeetupsOpenAPI: Record<string, OpenAPIParam> = {
+    controller: {
+        summary:'Meetups controller',
+        security: [{
+        bearerAuth: [],
+    }],
+    responses: {'401': {
+                description: 'Occurs when user is not logged in.',
+                content: getDefaultError('Access token is not provided', 401)
+            }}
+    },
     getAll: {
         summary: 'Returns page of meetups ',
         description: 'Returns object with total meetups count, starting position, page size and founded meetups.',
@@ -30,10 +40,6 @@ export const MeetupsOpenAPI: Record<string, OpenAPIParam> = {
             '200': {
                 description: 'User logged in successfully.',
             },
-            '401': {
-                description: 'Occurs when user is not logged in.',
-                content: getDefaultError('Access token is not provided', 401)
-            }
         }
     },
     findById: {
@@ -50,10 +56,6 @@ export const MeetupsOpenAPI: Record<string, OpenAPIParam> = {
             }
         ],
         responses: {
-            '401': {
-                description: 'Occurs when user is not logged in.',
-                content: getDefaultError('Access token is not provided', 401)
-            },
             '404': {
                 description: 'Occurs when meetup with given id not found.',
                 content: getDefaultError('Meetup with id not found', 404)
@@ -67,10 +69,6 @@ export const MeetupsOpenAPI: Record<string, OpenAPIParam> = {
             content: { CreateMeetUpDto }
         },
         responses: {
-            '401': {
-                description: 'Occurs when user is not logged in.',
-                content: getDefaultError('Access token is not provided', 401)
-            },
             '403': {
                 description: 'Occurs when non manager user tries to create meetup.',
                 content: getDefaultError('Non manager', 403)
@@ -94,10 +92,6 @@ export const MeetupsOpenAPI: Record<string, OpenAPIParam> = {
         responses: {
             '204': {
                 description: 'Meetup deleted successfully',
-            },
-            '401': {
-                description: 'Occurs when user is not logged in.',
-                content: getDefaultError('Access token is not provided', 401)
             },
             '403': {
                 description: 'Occurs when non manager user tries to delete meetup or when manager tries to delete not hes meetup',
@@ -124,10 +118,6 @@ export const MeetupsOpenAPI: Record<string, OpenAPIParam> = {
             }
         ],
         responses: {
-            '401': {
-                description: 'Occurs when user is not logged in.',
-                content: getDefaultError('Access token is not provided', 401)
-            },
             '403': {
                 description: 'Occurs when non manager user tries to update meetup or when manager tries to update not hes meetup',
                 content: getDefaultError('Non manager / User cant delete meetup with id', 403)
