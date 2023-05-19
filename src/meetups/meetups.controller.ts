@@ -25,15 +25,22 @@ import { type IMeetUpService, MeetUpFactory } from './';
 
 import { User, UserRole } from '../users';
 
-import { CreateMeetUpDto, MeetUpDtoMapper, UpdateMeetUpDto } from './dto';
+import { CreateMeetUpDto, MeetUpDtoMapper, ResponseMeetUpDto, UpdateMeetUpDto } from './dto';
 import { MeetUpNotFoundError } from '../shared';
 import { VerifyTokenMiddleware } from '../middlewares';
 import { type Logger } from 'winston';
 import { LoggerFactory } from '../utils';
 import { ListMeetUpDto } from './dto/list.dto';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
+import { MeetupsOpenAPI } from './meetups.openapi';
 
 @JsonController('/api/meetups')
 @UseBefore(VerifyTokenMiddleware)
+@OpenAPI({
+    security: [{
+        bearerAuth: [],
+    }],
+})
 export default class MeetupController {
 
     private readonly meetUpService: IMeetUpService;
@@ -45,6 +52,8 @@ export default class MeetupController {
 
     @Get()
     @Authorized()
+    @OpenAPI(MeetupsOpenAPI.getAll)
+    @ResponseSchema(ListMeetUpDto)
     async getAll(
         @QueryParam('startPos', { required: false }) startPos = 0,
         @QueryParam('pageSize', { required: false }) pageSize = 30,
@@ -66,40 +75,45 @@ export default class MeetupController {
 
     @Get('/:id')
     @Authorized()
+    @OpenAPI(MeetupsOpenAPI.findById)
+    @ResponseSchema(ResponseMeetUpDto)
     async getMeetUpByMeetupId(
         @Param('id') id: number,
         @CurrentUser({ required: true }) { username }: User
-    ): Promise<SuccessResponse | FailureResponse> {
+    ): Promise<ResponseMeetUpDto> {
         const foundedMeetup = await this.meetUpService.findById(id);
         if (foundedMeetup == null) {
             throw new MeetUpNotFoundError(`Meet up with ${id} id doesn't exists.`);
         }
         this.logger.info(`User ${username} requested meetup with ${id} id.`);
-        return ok(MeetUpDtoMapper.mapToResponseMeetUpDto(foundedMeetup));
+        return MeetUpDtoMapper.mapToResponseMeetUpDto(foundedMeetup);
     }
 
     @Post()
     @HttpCode(201)
+    @OpenAPI(MeetupsOpenAPI.createMeetUp)
+    @ResponseSchema(ResponseMeetUpDto, { statusCode: 201 })
     @Authorized([UserRole.MANAGER])
     async createMeetUp(
         @Body({ validate: true }) createDto: CreateMeetUpDto,
         @Res() res: Response,
         @CurrentUser({ required: true }) user: User
-    ): Promise<SuccessResponse | FailureResponse> {
+    ): Promise<ResponseMeetUpDto> {
         const mappedMeetUp = MeetUpDtoMapper.mapCreateMeetUpDto(createDto);
         const savedMeetUp = await this.meetUpService.createMeetUp(mappedMeetUp, user);
         const mappedRespose = MeetUpDtoMapper.mapToResponseMeetUpDto(savedMeetUp);
         this.logger.info(`Created meetup: ${mappedRespose}`);
-        return created(mappedRespose);
+        return mappedRespose;
     }
 
     @Delete('/:id')
     @Authorized([UserRole.MANAGER])
+    @OpenAPI(MeetupsOpenAPI.deleteMeetUpByMeetupId)
     async deleteMeetUpByMeetupId(
         @Param('id') id: number,
         @Res() response: Response,
         @CurrentUser({ required: true }) user: User
-    ): Promise<Response | FailureResponse> {
+    ): Promise<Response> {
         await this.meetUpService.deleteByMeetupIdAccodingToUser(id, user);
         this.logger.info(`Meetup with ${id} id successfully deleted by ${user.username}.`);
         return response.sendStatus(204);
@@ -107,12 +121,17 @@ export default class MeetupController {
 
     @Patch('/:id')
     @Authorized([UserRole.MANAGER])
-    async updateMeetUp(
+    @OpenAPI(MeetupsOpenAPI.updateMeetUpMeetupId)
+    @ResponseSchema(ResponseMeetUpDto,{
+        statusCode:200,
+        description:'Return updated meetup'
+    })
+    async updateMeetUpMeetupId(
         @Body({ validate: true }) updateDto: UpdateMeetUpDto,
         @Res() resp: Response,
         @Param('id') id: number,
         @CurrentUser({ required: true }) user: User
-    ): Promise<SuccessResponse | FailureResponse> {
+    ): Promise<ResponseMeetUpDto> {
         const withUpdatedProperties = MeetUpDtoMapper.mapUpdateMeetUpDto(updateDto);
         const updatedMeetUp = await this.meetUpService.updateByMeetupId(
             id,
@@ -123,6 +142,6 @@ export default class MeetupController {
         this.logger.info(
             `User ${user.username} updated meetup with ${id} id: ${mappedResponse}`
         );
-        return ok(mappedResponse);
+        return mappedResponse;
     }
 }

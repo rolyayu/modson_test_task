@@ -34,7 +34,38 @@ export class ExpressServer {
             const storage = getMetadataArgsStorage();
             const spec = routingControllersToSpec(storage, this.getRoutingControllersParams(), {
                 components: {
-                    schemas,
+                    schemas: {
+                        ...schemas,
+                        'ListMeetUpDto': {
+                            type: 'object',
+                            properties: {
+                                'totalCount': {
+                                    type: 'integer',
+                                    minimum: 0
+                                },
+                                'startPos': {
+                                    type: 'integer',
+                                    minimum: 0
+                                },
+                                'pageSize': {
+                                    type: 'integer',
+                                    minimum: 15
+                                },
+                                'meetups': {
+                                    type: 'array',
+                                    items: {
+                                        $ref: '#/components/schemas/ResponseMeetUpDto'
+                                    }
+                                }
+                            },
+                            required: [
+                                'totalCount',
+                                'startPos',
+                                'pageSize',
+                                'meetups'
+                            ]
+                        }
+                    },
                     securitySchemes: {
                         basicAuth: {
                             scheme: 'basic',
@@ -54,7 +85,7 @@ export class ExpressServer {
                 },
             })
 
-            this.server.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(spec))
+            this.server.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(spec));
         }
         return this.server;
     };

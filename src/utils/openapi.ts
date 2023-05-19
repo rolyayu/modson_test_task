@@ -19,3 +19,27 @@ export const OkApiResponse = () => {
         }
     }
 }
+
+export const getDefaultError = (message: string, code: number) => {
+    return {
+        'application/json': {
+            schema: {
+                type: 'object',
+                properties: {
+                    'statusCode': {
+                        type: 'integer',
+                        example: code
+                    },
+                    'message': {
+                        type: 'string',
+                        example: message
+                    },
+                    'name': {
+                        type: 'string',
+                        example: 'Error'
+                    },
+                },
+            }
+        }
+    }
+}
