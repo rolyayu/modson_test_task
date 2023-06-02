@@ -1,6 +1,5 @@
 import { DataSource } from 'typeorm';
-
-import configEnv from '../utils/dotenv.config';
+import { dataBaseConfig } from '../config';
 
 export class TypeOrmConnection {
     private static connection: DataSource;
@@ -15,19 +14,6 @@ export class TypeOrmConnection {
     };
 
     private static readonly configureDataSource = (): DataSource => {
-        configEnv();
-        const entitiesPath = __dirname + '/../**/*.entity.ts';
-        return new DataSource({
-            type: 'postgres',
-            host: process.env.PG_HOST,
-            port: Number(process.env.PG_PORT),
-            username: process.env.PG_USERNAME,
-            password: process.env.PG_PASSWORD,
-            database: process.env.PG_DATABASE,
-            entities: [entitiesPath],
-            logging: process.env.NODE_ENV == 'development',
-            synchronize: true, //TODO delete in prod
-            migrations: ['migrations/**/*.ts'],
-        });
+        return new DataSource(dataBaseConfig);
     };
 }
