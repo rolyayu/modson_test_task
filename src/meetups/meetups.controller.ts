@@ -77,7 +77,7 @@ export default class MeetupController {
         @Param('id') id: number,
         @CurrentUser({ required: true }) { username }: User
     ): Promise<ResponseMeetUpDto> {
-        const foundedMeetup = await this.meetUpService.findById(id);
+        const foundedMeetup = await this.meetUpService.findEntityByItsId(id);
         if (foundedMeetup == null) {
             throw new MeetUpNotFoundError(`Meet up with ${id} id doesn't exists.`);
         }
@@ -118,9 +118,9 @@ export default class MeetupController {
     @Patch('/:id')
     @Authorized([UserRole.MANAGER])
     @OpenAPI(MeetupsOpenAPI.updateMeetUpMeetupId)
-    @ResponseSchema(ResponseMeetUpDto,{
-        statusCode:200,
-        description:'Return updated meetup'
+    @ResponseSchema(ResponseMeetUpDto, {
+        statusCode: 200,
+        description: 'Return updated meetup'
     })
     async updateMeetUpMeetupId(
         @Body({ validate: true }) updateDto: UpdateMeetUpDto,

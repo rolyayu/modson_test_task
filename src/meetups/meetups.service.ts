@@ -20,7 +20,7 @@ class MeetUpService implements IMeetUpService {
         createdBy: User,
         withUpdatedProperties: MeetUp
     ): Promise<MeetUp> => {
-        const foundedMeetUp = await this.findById(id);
+        const foundedMeetUp = await this.findEntityByItsId(id);
         if (foundedMeetUp == null) {
             throw new MeetUpNotFoundError(`Meet up with ${id} id doesn't exists.`);
         }
@@ -32,7 +32,7 @@ class MeetUpService implements IMeetUpService {
     };
 
     deleteByMeetupIdAccodingToUser = async (meetUpId: number, user: User): Promise<void> => {
-        const foundedMeetUp = await this.findById(meetUpId);
+        const foundedMeetUp = await this.findEntityByItsId(meetUpId);
         if (foundedMeetUp == null) {
             throw new MeetUpNotFoundError(`Meet up with ${meetUpId} id not exists.`);
         }
@@ -41,7 +41,7 @@ class MeetUpService implements IMeetUpService {
                 `User ${user.username} can't delete meet up with ${meetUpId} id.`
             );
         }
-        await this.deleteById(meetUpId);
+        await this.deleteEntityByItsId(meetUpId);
     };
 
     async createMeetUp(meetUp: MeetUp, user: User): Promise<MeetUp> {
@@ -79,7 +79,7 @@ class MeetUpService implements IMeetUpService {
         return await this.meetUpRepository.save(meetup);
     };
 
-    deleteById = async (id: number): Promise<void | never> => {
+    deleteEntityByItsId = async (id: number): Promise<void | never> => {
         if (
             !(await this.meetUpRepository.exist({
                 where: {
@@ -89,13 +89,13 @@ class MeetUpService implements IMeetUpService {
         ) {
             throw new TypeORMError(`Meet up this '${id}' id doesn't exists.`);
         }
-        const meetUp = await this.findById(id);
+        const meetUp = await this.findEntityByItsId(id);
         meetUp!.tags = [];
         const meetUpWithoutTags = await this.meetUpRepository.save(meetUp!);
         await this.meetUpRepository.remove([meetUpWithoutTags]);
     };
 
-    findById = async (id: number): Promise<MeetUp | null> => {
+    findEntityByItsId = async (id: number): Promise<MeetUp | null> => {
         return await this.meetUpRepository.findOneBy({ id });
     };
 

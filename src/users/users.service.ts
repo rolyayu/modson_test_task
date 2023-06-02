@@ -26,7 +26,7 @@ export class UserService implements IUserService {
         return await this.userRepository.save(toUpdate);
     };
 
-    findById = async (id: number): Promise<User | null> => {
+    findEntityByItsId = async (id: number): Promise<User | null> => {
         return await this.userRepository.findOneBy({ id });
     };
 
@@ -61,8 +61,8 @@ export class UserService implements IUserService {
         return await this.userRepository.save(value);
     };
 
-    deleteById = async (id: number): Promise<void> => {
-        const user = await this.findById(id);
+    deleteEntityByItsId = async (id: number): Promise<void> => {
+        const user = await this.findEntityByItsId(id);
         if (user == null) {
             throw new TypeORMError(`Meet up this '${id}' id doesn't exists.`);
         }

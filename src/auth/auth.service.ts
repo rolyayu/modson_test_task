@@ -56,7 +56,7 @@ export class AuthService implements IAuthService {
         const payload = JwtService.extractRefreshPayload(token);
         const { userId } = payload;
 
-        const foundedUser = await this.userService.findById(userId);
+        const foundedUser = await this.userService.findEntityByItsId(userId);
         if (foundedUser == null) {
             throw new AuthError('There is no user with given token.');
         }
