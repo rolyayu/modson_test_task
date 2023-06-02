@@ -50,13 +50,14 @@ export class AuthController {
         @Res() res: Response
     ): Promise<Response | FailureResponse> {
         const tokens = await this.authService.login(login);
+        const now = Date.now();
         res.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
-            maxAge: constants.refreshCookieMaxAge,
+            expires: new Date(now + constants.refreshCookieMaxAge)
         });
         res.cookie('accessToken', tokens.accessToken, {
             httpOnly: true,
-            maxAge: constants.accessCookieMaxAge,
+            expires: new Date(now + constants.accessCookieMaxAge)
         });
         this.logger.info(`User ${login.username} logged in.`);
         return res.sendStatus(200);
@@ -85,13 +86,14 @@ export class AuthController {
         @CurrentUser({ required: true }) { username }: User
     ): Promise<Response | FailureResponse> {
         const tokens = await this.authService.refresh(refreshToken);
+        const now = Date.now();
         res.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
-            maxAge: constants.refreshCookieMaxAge,
+            expires: new Date(now + constants.refreshCookieMaxAge)
         });
         res.cookie('accessToken', tokens.accessToken, {
             httpOnly: true,
-            maxAge: constants.accessCookieMaxAge,
+            expires: new Date(now + constants.accessCookieMaxAge)
         });
         this.logger.info(`Updated tokens for ${username}.`);
         return res.sendStatus(200);
